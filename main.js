@@ -71,38 +71,13 @@ $("textarea").each(function(){
 	$(this).text(window.localStorage.getItem(i));
 });
 
-//get the geolocation of user
 var latitude;
 var longitude;
-function locationSuccess(position) {
-	latitude = position.coords.latitude;
-	longitude = position.coords.longitude;
-	// var altitude = position.coords.altitude;
-	// var accuracy = position.coords.accuracy;
-	// var altitudeAccuracy = position.coords.altitudeAccuracy;
-	// var heading = position.coords.height;
-	// var speed = position.coords.speed;
-	// var timestamp = position.timestamp;
-}
-
-function locationError(error) {
-	var code = error.code;
-	var message = error.message;
-}
-
-navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
-
-var movie = "Mr. Nobody";
-var queryURL = "https://api.opencagedata.com/geocode/v1/json?q="+latitude+"+"+longitude+"&key=f1e329be05284ac6aa0cee3165fa5fff&pretty=1";
-
-$.ajax({
-    url: queryURL,
-    method: "GET"
-    }).then(function(response) {
-	console.log(response);
-	});
-
 $(document).ready(function(){
+	var locationHolder = $("<div>");
+	locationHolder.text("...Locating");
+	$("header").append(locationHolder);
+
 	setInterval(function(){
 		//get the current time frm moment.js
 		var currentTime = parseInt(moment().format('HH'));
@@ -132,5 +107,42 @@ $(document).ready(function(){
 				inputArea.removeClass("past");
 			}
 		});
+		
+
 	},100);
+	
+	setTimeout(function(){
+		if(latitude && longitude){
+		
+		var queryURL = "https://api.opencagedata.com/geocode/v1/json?q="+latitude+"%2C"+"+"+longitude+"&key=f1e329be05284ac6aa0cee3165fa5fff&pretty=1";
+
+		$.ajax({
+			url: queryURL,
+			method: "GET"
+			}).then(function(response) {
+			console.log(response.results[0]);
+			locationHolder.text("You are now in: "+response.results[0].formatted);
+			});
+		}
+	},5000);
+	//get the geolocation of user
+
+	function locationSuccess(position) {
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+		// var altitude = position.coords.altitude;
+		// var accuracy = position.coords.accuracy;
+		// var altitudeAccuracy = position.coords.altitudeAccuracy;
+		// var heading = position.coords.height;
+		// var speed = position.coords.speed;
+		// var timestamp = position.timestamp;
+	}
+
+	function locationError(error) {
+		var code = error.code;
+		var message = error.message;
+	}
+
+	navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
+
 });
