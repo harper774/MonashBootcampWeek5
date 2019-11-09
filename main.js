@@ -36,7 +36,7 @@ $(".row").each(function(i, el){
 //adding icons into save button
 $(".saveBtn").each(function(){
 	// console.log(this);
-	var iconSave = $('<i class="material-icons">archive</i>');
+	var iconSave = $('<i class="material-icons">sentiment_very_satisfied</i>');
 	iconSave.css("font-size","40px");
 	$(this).append(iconSave);
 });
