@@ -5,35 +5,37 @@ $("#currentDay").text(moment().format('dddd, MMM Do YYYY'));
 for (var i = 0; i<9; i++){
 	var timeBlockEl = $("<div>");
 	timeBlockEl.attr("class", "row");
-	$(".container").append(timeBlockEl);
-}
 
-//adding three parts into each timeblocks
-$(".row").each(function(i){
-	console.log($(this));
-	console.log(i);
+	// console.log($(timeBlockEl));
+	// console.log(i);
 	var timerEl = $("<div>");
 	timerEl.attr("class", "time-block hour");
-	$(this).append(timerEl);
+	$(timeBlockEl).append(timerEl);
 
 	var userInput = $("<textarea>");
 	userInput.attr({
 		"class":"description",
 		"id":"text"+i
 	});
-	$(this).append(userInput);
+	$(timeBlockEl).append(userInput);
 
 	var saveBtn = $("<button>");
 	saveBtn.attr({
 		"class":"saveBtn",
 		"id":"btn"+i
 	});
-	$(this).append(saveBtn);
+	$(timeBlockEl).append(saveBtn);
+	$(".container").append(timeBlockEl);
+}
+
+//adding three parts into each timeblocks
+$(".row").each(function(i, el){
+	console.log(i, el);
 });
 
 //adding icons into save button
 $(".saveBtn").each(function(){
-	console.log(this);
+	// console.log(this);
 	var iconSave = $('<i class="material-icons">archive</i>');
 	iconSave.css("font-size","40px");
 	$(this).append(iconSave);
@@ -57,14 +59,7 @@ $(".saveBtn").click(function(){
 	localStorage.setItem(i,value);
 });
 
-//displaying texts
-$("textarea").on("keyup",function(){
-	var i = $(this).parent(".row").children(".saveBtn").attr("id");
-	var value = $(this).val().trim();
-	localStorage.setItem(i,value);
-	// $(this).text(localStorage.getItem(i));
-});
-
+// //displaying texts
 $("textarea").each(function(){
 	var i = $(this).parent(".row").children(".saveBtn").attr("id");
 	// var value = $(this).val().trim();
@@ -72,13 +67,7 @@ $("textarea").each(function(){
 	$(this).text(localStorage.getItem(i));
 });
 
-var latitude;
-var longitude;
 $(document).ready(function(){
-	var locationHolder = $("<div>");
-	locationHolder.text("...Locating");
-	$("header").append(locationHolder);
-
 	setInterval(function(){
 		//get the current time frm moment.js
 		var currentTime = parseInt(moment().format('HH'));
@@ -107,16 +96,17 @@ $(document).ready(function(){
 		});
 	},100);
 
-//get the geolocation of user
+	//get the geolocation of user
+	var latitude;
+	var longitude;
+	//initializing the location holder
+	var locationHolder = $("<div>");
+	locationHolder.text("...Locating");
+	$("header").append(locationHolder);
+	//locationSuccess holds the function that will run when the getCurrentPosition is done
 	function locationSuccess(position) {
 		latitude = position.coords.latitude;
 		longitude = position.coords.longitude;
-		// var altitude = position.coords.altitude;
-		// var accuracy = position.coords.accuracy;
-		// var altitudeAccuracy = position.coords.altitudeAccuracy;
-		// var heading = position.coords.height;
-		// var speed = position.coords.speed;
-		// var timestamp = position.timestamp;
 		if(latitude && longitude){
 		
 			var queryURL = "https://api.opencagedata.com/geocode/v1/json?q="+latitude+"%2C"+"+"+longitude+"&key=f1e329be05284ac6aa0cee3165fa5fff&pretty=1";
@@ -124,10 +114,10 @@ $(document).ready(function(){
 			$.ajax({
 				url: queryURL,
 				method: "GET"
-				}).then(function(response) {
+			}).then(function(response) {
 				console.log(response.results[0]);
 				locationHolder.text("You are now in: "+response.results[0].formatted);
-				});
+			});
 		}
 	}
 
@@ -137,5 +127,4 @@ $(document).ready(function(){
 	}
 
 	navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
-
 });
